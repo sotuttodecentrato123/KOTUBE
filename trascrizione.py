@@ -16,6 +16,11 @@ LINGUE_SOTTOTITOLI = ["it", "en"]
 MODELLO_WHISPER = "medium"
 FRASI_PER_PARAGRAFO = 6
 
+# Opzioni comuni per yt-dlp (trucco Android)
+OPZIONI_BASE = {
+    "quiet": True,
+    "extractor_args": {"youtube": {"player_client": ["android"]}},
+}
 
 def estrai_id(url):
     m = re.search(r"(?:v=|youtu\.be/|shorts/|embed/|live/)([A-Za-z0-9_-]{11})", url)
@@ -25,7 +30,9 @@ def estrai_id(url):
 
 
 def titolo_video(url):
-    with yt_dlp.YoutubeDL({"quiet": True, "skip_download": True}) as ydl:
+    opzioni = OPZIONI_BASE.copy()
+    opzioni["skip_download"] = True
+    with yt_dlp.YoutubeDL(opzioni) as ydl:
         return ydl.extract_info(url, download=False).get("title", "video")
 
 
@@ -46,7 +53,10 @@ def prova_sottotitoli(video_id):
 def trascrivi_audio(url):
     from faster_whisper import WhisperModel
     with tempfile.TemporaryDirectory() as tmp:
-        opzioni = {"format": "bestaudio/best", "outtmpl": str(Path(tmp) / "audio.%(ext)s"), "quiet": True}
+        opzioni = OPZIONI_BASE.copy()
+        opzioni["format"] = "bestaudio/best"
+        opzioni["outtmpl"] = str(Path(tmp) / "audio.%(ext)s")
+        
         with yt_dlp.YoutubeDL(opzioni) as ydl:
             ydl.download([url])
         file_audio = next(Path(tmp).glob("audio.*"))
@@ -59,7 +69,7 @@ def trascrivi_audio(url):
 
 def in_paragrafi(frasi):
     frasi = [re.sub(r"\s+", " ", f).strip() for f in frasi if f.strip()]
-    return [" ".join(frasi[i: i + FRASI_PER_PARAGRAFO]) for i in range(0, len(frasi), FRASI_PER_PARAGRAFO)]
+    return [" ".join(frasi[i : i + FRASI_PER_PARAGRAFO]) for i in range(0, len(frasi), FRASI_PER_PARAGRAFO)]
 
 
 def nome_sicuro(testo):
@@ -106,15 +116,18 @@ def elabora_video(url):
     salva_txt(titolo, paragrafi, base.with_suffix(".txt"))
     salva_docx(titolo, paragrafi, base.with_suffix(".docx"))
     salva_odt(titolo, paragrafi, base.with_suffix(".odt"))
-
+    
     testo_completo = titolo + "\n\n" + "\n\n".join(paragrafi)
     return testo_completo, nome_base
 
 
-# --- NUOVA FUNZIONE PER LA CRONOLOGIA ---
 def leggi_testo_salvato(nome_file):
     percorso = CARTELLA_OUTPUT / nome_file
     if percorso.exists():
         return percorso.read_text(encoding="utf-8")
     return None
-# ---------------------------------------
+
+
+if __name__ == "__main__":
+    indirizzo = sys.argv[1] if len(sys.argv) > 1 else input("Incolla l'URL del video: ").strip()
+    elabora_video(indirizzo)
