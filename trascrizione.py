@@ -19,7 +19,7 @@ FRASI_PER_PARAGRAFO = 6
 # Opzioni comuni per yt-dlp (trucco Android)
 OPZIONI_BASE = {
     "quiet": True,
-    "extractor_args": {"youtube": {"player_client": ["ios"]}},
+    "extractor_args": {"youtube": {"player_client": ["tv"]}},
 }
 
 
