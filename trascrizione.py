@@ -16,10 +16,12 @@ LINGUE_SOTTOTITOLI = ["it", "en"]
 MODELLO_WHISPER = "medium"
 FRASI_PER_PARAGRAFO = 6
 
-# Opzioni comuni per yt-dlp (trucco Android)
+# Opzioni comuni per yt-dlp.
+# Non forzare player_client "tv": da novembre 2026 YouTube risponde
+# "The page needs to be reloaded." e l'estrazione fallisce su tutti i video.
+# Il client predefinito di yt-dlp funziona.
 OPZIONI_BASE = {
     "quiet": True,
-    "extractor_args": {"youtube": {"player_client": ["tv"]}},
 }
 
 
