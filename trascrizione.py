@@ -116,9 +116,11 @@ def elabora_video(url):
     CARTELLA_OUTPUT.mkdir(exist_ok=True)
     nome_base = nome_sicuro(titolo)
     base = CARTELLA_OUTPUT / nome_base
-    salva_txt(titolo, paragrafi, base.with_suffix(".txt"))
-    salva_docx(titolo, paragrafi, base.with_suffix(".docx"))
-    salva_odt(titolo, paragrafi, base.with_suffix(".odt"))
+    # Attenzione: with_suffix() tratterebbe ". 001" come estensione e lo
+    # eliminerebbe, mentre il link di download mantiene il nome completo.
+    salva_txt(titolo, paragrafi, Path(str(base) + ".txt"))
+    salva_docx(titolo, paragrafi, Path(str(base) + ".docx"))
+    salva_odt(titolo, paragrafi, Path(str(base) + ".odt"))
 
     testo_completo = titolo + "\n\n" + "\n\n".join(paragrafi)
     return testo_completo, nome_base
