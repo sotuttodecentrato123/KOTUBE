@@ -528,6 +528,27 @@ def leggi_file(nome_file):
         return "File non trovato.", 404
 
 
+@app.route("/stop")
+def stop_server():
+    import threading
+    import time
+
+    # Solo da localhost: evita che un sito esterno possa fermare KOTUBE.
+    if request.remote_addr not in ("127.0.0.1", "::1"):
+        return "Non consentito", 403
+
+    def spegni():
+        time.sleep(1)
+        os._exit(0)
+
+    threading.Thread(target=spegni, daemon=True).start()
+    return (
+        "<!doctype html><meta charset='utf-8'>"
+        "<h2>KOTUBE fermato</h2>"
+        "<p>Puoi chiudere questa scheda.</p>"
+    )
+
+
 if __name__ == "__main__":
     print("Avvio di KOTUBE su http://127.0.0.1:48217")
     app.run(debug=True, port=48217)

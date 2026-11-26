@@ -33,7 +33,10 @@ Si apre il browser su http://127.0.0.1:48217/
 ## Arresto
 
 - Doppio clic su `Ferma_KOTUBE.bat`
+- oppure apri http://127.0.0.1:48217/stop nel browser (puoi salvarlo nei preferiti)
 - oppure chiudere il processo `pythonw.exe`
+
+La pagina `/stop` funziona solo da locale e solo mentre KOTUBE e' in esecuzione.
 
 ## Note
 
